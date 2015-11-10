@@ -12,9 +12,9 @@ unsigned int groups_per_line;
 unsigned int skip;
 unsigned int counter;
 
-char* usage_string = "bd [-g N] [-l N] [-s N] [file]\n";
-char* unknown_error_string = "ERROR: unknown error during option parsing\n";
-char* unknown_opt_string = "ERROR: unknown option ";
+const char* usage_string = "bd [-g N] [-l N] [-s N] [file]\n";
+const char* unknown_error_string = "ERROR: unknown error during option parsing\n";
+const char* unknown_opt_string = "ERROR: unknown option ";
 
 static void
 print_bytes(char* buffer, ssize_t n_bytes)
