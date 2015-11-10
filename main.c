@@ -40,6 +40,7 @@ static void
 print_error(int error)
 {
 	char* string;
+
 	string = strerror(error);
 	write(STDERR_FILENO, string, strlen(string));
 }
