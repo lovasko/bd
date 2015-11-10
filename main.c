@@ -60,15 +60,15 @@ main(int argc, char** argv)
 	while ((option = getopt(argc, argv, "g:l:s:")) != -1) {
 		switch(option) {
 			case 'g': 
-				group_size = atoi(optarg);
+				group_size = (unsigned int)atoi(optarg);
 			break;
 
 			case 'l': 
-				groups_per_line = atoi(optarg);
+				groups_per_line = (unsigned int)atoi(optarg);
 			break;
 
 			case 's': 
-				skip = atoi(optarg);
+				skip = (unsigned int)atoi(optarg);
 			break;
 
 			case 'h':
