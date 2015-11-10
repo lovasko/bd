@@ -7,14 +7,13 @@
 
 #define BUFFER_SIZE 65536
 
-unsigned int group_size;
-unsigned int groups_per_line;
-unsigned int skip;
-unsigned int counter;
+static unsigned int group_size;
+static unsigned int groups_per_line;
+static unsigned int skip;
+static unsigned int counter;
 
-const char* usage_string = "bd [-g N] [-l N] [-s N] [file]\n";
-const char* unknown_error_string = "ERROR: unknown error during option parsing\n";
-const char* unknown_opt_string = "ERROR: unknown option ";
+static const char* usage = "bd [-g N] [-l N] [-s N] [file]\n";
+static const char* unk_err = "ERROR: unknown error during option parsing\n";
 
 static void
 print_bytes(char* buffer, ssize_t n_bytes)
@@ -57,7 +56,7 @@ main(int argc, char** argv)
 	groups_per_line = 8;
 	counter = 0;
 
-	while ((option = getopt(argc, argv, "g:l:s:")) != -1) {
+	while ((option = getopt(argc, argv, "g:hl:s:")) != -1) {
 		switch(option) {
 			case 'g': 
 				group_size = (unsigned int)atoi(optarg);
@@ -72,17 +71,12 @@ main(int argc, char** argv)
 			break;
 
 			case 'h':
-				write(STDOUT_FILENO, usage_string, strlen(usage_string));
-			return EXIT_FAILURE;
-
 			case '?':
-				write(STDERR_FILENO, unknown_opt_string, strlen(unknown_opt_string));
-				/* write(STDERR_FILENO, (char)optopt, 1); */
-				write(STDERR_FILENO, "\n", 1);
+				write(STDOUT_FILENO, usage, strlen(usage));
 			return EXIT_FAILURE;
 
 			default: 
-				write(STDERR_FILENO, unknown_error_string, strlen(unknown_error_string));
+				write(STDERR_FILENO, unk_err, strlen(unk_err));
 			return EXIT_FAILURE;
 		}
 	}
