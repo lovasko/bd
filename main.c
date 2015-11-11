@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define BUFFER_SIZE 65536
 
-static unsigned int group_size;
-static unsigned int groups_per_line;
-static unsigned int skip;
-static unsigned int counter;
+static uintmax_t group_size;
+static uintmax_t groups_per_line;
+static uintmax_t skip;
+static uintmax_t counter;
 
 static const char* usage = "bd [-g N] [-l N] [-s N] [file]\n";
 static const char* unk_err = "ERROR: unknown error during option parsing\n";
@@ -36,13 +37,28 @@ print_bytes(char* buffer, ssize_t n_bytes)
 }
 
 static void
-print_error(int error)
+print_error(void)
 {
 	char* string;
 
-	string = strerror(error);
+	string = strerror(errno);
 	write(STDERR_FILENO, string, strlen(string));
 	write(STDERR_FILENO, "\n", 1);
+}
+
+static uintmax_t 
+read_number(void)
+{
+	uintmax_t number;
+
+	errno = 0;
+	number = strtoumax(optarg, NULL, 10);
+	if ((number == 0 || number == UINTMAX_MAX) && errno != 0) {
+		print_error();
+		exit(EXIT_FAILURE);
+	}
+
+	return number;
 }
 
 int
@@ -59,17 +75,9 @@ main(int argc, char** argv)
 
 	while ((option = getopt(argc, argv, "g:hl:s:")) != -1) {
 		switch(option) {
-			case 'g': 
-				group_size = (unsigned int)atoi(optarg);
-			break;
-
-			case 'l': 
-				groups_per_line = (unsigned int)atoi(optarg);
-			break;
-
-			case 's': 
-				skip = (unsigned int)atoi(optarg);
-			break;
+			case 'g': group_size = read_number(); break;
+			case 'l': groups_per_line = read_number(); break;
+			case 's': skip = read_number(); break;
 
 			case 'h':
 			case '?':
@@ -88,7 +96,7 @@ main(int argc, char** argv)
 		errno = 0;
 		fd = open(argv[optind], O_RDONLY);
 		if (fd < 0) {
-			print_error(errno);
+			print_error();
 			return EXIT_FAILURE;
 		}
 	}
@@ -101,7 +109,7 @@ main(int argc, char** argv)
 			break;
 
 		if (n_bytes == -1) {
-			print_error(errno);
+			print_error();
 			return EXIT_FAILURE;
 		}
 
