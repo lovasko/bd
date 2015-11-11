@@ -42,6 +42,7 @@ print_error(int error)
 
 	string = strerror(error);
 	write(STDERR_FILENO, string, strlen(string));
+	write(STDERR_FILENO, "\n", 1);
 }
 
 int
