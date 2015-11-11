@@ -1,10 +1,11 @@
-#include <limits.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
 #include <inttypes.h>
+#include <stdio.h>
+#include <errno.h>
+#include <limits.h>
+#include <string.h>
 
 #define BUFFER_SIZE 65536
 
@@ -12,9 +13,6 @@ static uintmax_t group_size;
 static uintmax_t groups_per_line;
 static uintmax_t skip;
 static uintmax_t counter;
-
-static const char* usage = "bd [-g N] [-l N] [-s N] [file]\n";
-static const char* unk_err = "ERROR: unknown error during option parsing\n";
 
 static void
 print_bytes(char* buffer, ssize_t n_bytes)
@@ -36,16 +34,6 @@ print_bytes(char* buffer, ssize_t n_bytes)
 	}
 }
 
-static void
-print_error(void)
-{
-	char* string;
-
-	string = strerror(errno);
-	write(STDERR_FILENO, string, strlen(string));
-	write(STDERR_FILENO, "\n", 1);
-}
-
 static uintmax_t 
 read_number(void)
 {
@@ -54,11 +42,20 @@ read_number(void)
 	errno = 0;
 	number = strtoumax(optarg, NULL, 10);
 	if ((number == 0 || number == UINTMAX_MAX) && errno != 0) {
-		print_error();
+		perror("strtoumax");
 		exit(EXIT_FAILURE);
 	}
 
 	return number;
+}
+
+static void
+print_usage(void)
+{
+	printf("bd [-g N] [-l N] [-s N] [file]\n"
+	       "  -g N    group size\n"
+	       "  -l N    groups per line\n"
+	       "  -s N    skip bits from the head\n");
 }
 
 int
@@ -81,11 +78,11 @@ main(int argc, char** argv)
 
 			case 'h':
 			case '?':
-				write(STDOUT_FILENO, usage, strlen(usage));
+				print_usage();
 			return EXIT_FAILURE;
 
 			default: 
-				write(STDERR_FILENO, unk_err, strlen(unk_err));
+				fprintf(stderr, "ERROR: Unknown error while parsing arguments\n");
 			return EXIT_FAILURE;
 		}
 	}
@@ -96,7 +93,7 @@ main(int argc, char** argv)
 		errno = 0;
 		fd = open(argv[optind], O_RDONLY);
 		if (fd < 0) {
-			print_error();
+			perror("open");
 			return EXIT_FAILURE;
 		}
 	}
@@ -109,7 +106,7 @@ main(int argc, char** argv)
 			break;
 
 		if (n_bytes == -1) {
-			print_error();
+			perror("read");
 			return EXIT_FAILURE;
 		}
 
