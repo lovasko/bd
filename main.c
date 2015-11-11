@@ -27,9 +27,9 @@ print_bytes(char* buffer, ssize_t n_bytes)
 		bit = !!(buffer[i/8] & (1 << (i % CHAR_BIT)));
 		write(STDOUT_FILENO, bit ? "1" : "0", 1);
 
-		if (((counter+1) % (group_size * groups_per_line)) == 0)
+		if (((counter+1-skip) % (group_size * groups_per_line)) == 0)
 			write(STDOUT_FILENO, "\n", 1);
-		else if ((counter+1) % group_size == 0)
+		else if ((counter+1-skip) % group_size == 0)
 			write(STDOUT_FILENO, " ", 1);
 	}
 }
@@ -54,7 +54,7 @@ print_usage(void)
 {
 	printf("bd [-g N] [-l N] [-s N] [file]\n"
 	       "  -g N    group size\n"
-	       "  -l N    groups per line\n"
+	       "  -n N    groups per line\n"
 	       "  -s N    skip bits from the head\n");
 }
 
@@ -70,10 +70,10 @@ main(int argc, char** argv)
 	groups_per_line = 8;
 	counter = 0;
 
-	while ((option = getopt(argc, argv, "g:hl:s:")) != -1) {
+	while ((option = getopt(argc, argv, "g:hn:s:")) != -1) {
 		switch(option) {
 			case 'g': group_size = read_number(); break;
-			case 'l': groups_per_line = read_number(); break;
+			case 'n': groups_per_line = read_number(); break;
 			case 's': skip = read_number(); break;
 
 			case 'h':

@@ -10,7 +10,7 @@ source code.
 
 ## Usage
 The `bd` utility groups bits into groups and puts a certain number of groups on
-one line. Both of these values can be set by options `-g N` and `-l N`
+one line. Both of these values can be set by options `-g N` and `-n N`
 respectively. Default values amount to `CHAR_BIT` for the group size and `8`
 for the groups-per-line setting.
 
@@ -19,7 +19,7 @@ use the option `-s N`.
 
 ## Example
 ```
-$ head -c 6 /dev/random | bd -g 4 -l 4
+$ head -c 6 /dev/random | bd -g 4 -n 4
 0111 0010 1101 1001
 1001 1101 0101 1101
 0001 1001 0000 1100
