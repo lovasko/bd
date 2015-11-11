@@ -27,7 +27,7 @@ $ head -c 6 /dev/random | bd -g 4 -l 4
 
 ## Build & install
 ```
-$ clang -o bd main.c
+$ make
 $ sudo mv ./bd /usr/bin
 ```
 
