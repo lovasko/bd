@@ -108,6 +108,9 @@ main(int argc, char** argv)
 		print_bytes(buffer, n_bytes);
 	}
 
+	if (fd != STDIN_FILENO)
+		close(fd);
+
 	return EXIT_SUCCESS;
 }
 
