@@ -1,6 +1,6 @@
 # bd
 Binary dump utility that respects your `CHAR_BIT` value and your bit numbering.
-Written in a strict C89, `bd` will work on any architecture and platform.
+Written in a strict C99, `bd` will work on any architecture and platform.
 
 ## Introduction
 The standard `od` utility does not support binary output (just like `printf`
