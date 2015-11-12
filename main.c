@@ -65,7 +65,9 @@ print_usage(void)
 	printf("bd [-g N] [-l N] [-s N] [file]\n"
 	       "  -g N    group size\n"
 	       "  -n N    groups per line\n"
-	       "  -s N    skip bits from the head\n");
+	       "  -s N    skip bits from the head\n"
+	       "  -l      least significant bit first\n"
+	       "  -m      most significant bit first\n");
 }
 
 int
