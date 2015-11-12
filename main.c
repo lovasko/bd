@@ -9,22 +9,32 @@
 
 #define BUFFER_SIZE 65536
 
+#define LSB 1
+#define MSB 2
+
 static uintmax_t group_size;
 static uintmax_t groups_per_line;
 static uintmax_t skip;
 static uintmax_t counter;
+static int numbering;
 
 static void
 print_bytes(char* buffer, ssize_t n_bytes)
 {
 	ssize_t i;
 	int bit;
+	char mask;
 
 	for (i = 0; i < n_bytes * CHAR_BIT; i++, counter++) {
 		if (counter < skip)
 			continue;
 
-		bit = !!(buffer[i/8] & (1 << (i % CHAR_BIT)));
+		if (numbering == LSB)
+			mask = (char)(1 << (i % CHAR_BIT));
+		else
+			mask = (char)(1 << (CHAR_BIT - (i % CHAR_BIT) - 1));
+
+		bit = !!(buffer[i/8] & mask);
 		write(STDOUT_FILENO, bit ? "1" : "0", 1);
 
 		if (((counter+1-skip) % (group_size * groups_per_line)) == 0)
@@ -69,12 +79,16 @@ main(int argc, char** argv)
 	group_size = CHAR_BIT;
 	groups_per_line = 8;
 	counter = 0;
+	numbering = LSB;
 
-	while ((option = getopt(argc, argv, "g:hn:s:")) != -1) {
+	while ((option = getopt(argc, argv, "g:hlmn:s:")) != -1) {
 		switch(option) {
 			case 'g': group_size = read_number(); break;
 			case 'n': groups_per_line = read_number(); break;
 			case 's': skip = read_number(); break;
+
+			case 'l': numbering = LSB; break;
+			case 'm': numbering = MSB; break;
 
 			case 'h':
 			case '?':
